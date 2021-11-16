@@ -1,2 +1,2 @@
-# managedreference
+# ManagedReference
 Managed Reference
