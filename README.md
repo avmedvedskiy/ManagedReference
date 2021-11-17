@@ -8,7 +8,7 @@ The `ManagedReference` attribute allows you to easily set subclasses of those ab
 
 
 #### Features
- - Set a subclasses from popup
+ - Set a subclasses from dropdown
  - Group classes by the `ManagedReferenceGroupAttribute` with custom groupname
  - Create arrays of subclasses
 
