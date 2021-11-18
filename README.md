@@ -1,3 +1,5 @@
+ [![Releases](https://img.shields.io/github/release/avmedvedskiy/ManagedReference.svg)](https://github.com/avmedvedskiy/ManagedReference/releases)
+ 
 # ManagedReference
 Managed Reference
 The `SerializeReference` attribute, added in Unity 2019.3, makes it possible to serialize references to interfaces and abstract classes.
