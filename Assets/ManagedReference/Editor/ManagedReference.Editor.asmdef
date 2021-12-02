@@ -1,10 +1,11 @@
 {
     "name": "ManagedReference.Editor",
-    "rootNamespace": "",
     "references": [
         "ManagedReference.Runtime"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
