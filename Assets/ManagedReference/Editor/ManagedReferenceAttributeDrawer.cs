@@ -11,7 +11,9 @@ namespace ManagedReference.Editor
     [CustomPropertyDrawer(typeof(ManagedReferenceAttribute))]
     public class ManagedReferenceAttributeDrawer : PropertyDrawer
     {
-        static readonly GUIContent _isNotManagedReferenceLabel = new GUIContent("The property type is not manage reference.");
+        static readonly GUIContent _isNotManagedReferenceLabel =
+            new GUIContent("The property type is not manage reference.");
+
         static readonly GUIContent _nullLabel = new GUIContent("Null");
 
         protected List<Type> types = null;
@@ -28,6 +30,7 @@ namespace ManagedReference.Editor
                     targetType = property.GetManagedReferenceFieldType();
                     InitTypes(targetType);
                 }
+
                 Rect dropDownRect = position;
                 dropDownRect.width -= EditorGUIUtility.labelWidth;
                 dropDownRect.x += EditorGUIUtility.labelWidth;
@@ -46,6 +49,7 @@ namespace ManagedReference.Editor
             {
                 EditorGUI.LabelField(position, label, _isNotManagedReferenceLabel);
             }
+
             EditorGUI.EndProperty();
         }
 
@@ -81,11 +85,14 @@ namespace ManagedReference.Editor
             nodesMenu.AddItem(_nullLabel, false, (x) => { OnSelect((Type)x, property); }, null);
             foreach (var type in this.types)
             {
-                ManagedReferenceGroupAttribute group = (ManagedReferenceGroupAttribute)Attribute.GetCustomAttribute(type, typeof(ManagedReferenceGroupAttribute));
+                ManagedReferenceGroupAttribute group =
+                    (ManagedReferenceGroupAttribute)Attribute.GetCustomAttribute(type,
+                        typeof(ManagedReferenceGroupAttribute));
 
-                string name = group == null ? type.Name : $"{group.name}/{type.Name}"; 
+                string name = group == null ? type.Name : $"{group.name}/{type.Name}";
                 nodesMenu.AddItem(new GUIContent(name), false, (x) => { OnSelect((Type)x, property); }, type);
             }
+
             nodesMenu.ShowAsContext();
         }
 
@@ -100,14 +107,14 @@ namespace ManagedReference.Editor
 
         private void InitTypes(Type type)
         {
-            this.types = TypeCache.GetTypesDerivedFrom(type).Where(p =>
-                p.IsClass &&
-                (p.IsPublic || p.IsNestedPublic) &&
-                !p.IsAbstract &&
-                !p.IsGenericType &&
-                !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
-                Attribute.IsDefined(p, typeof(SerializableAttribute))
-            ).ToList();
+            this.types = TypeCache.GetTypesDerivedFrom(type)
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic) &&
+                    !p.IsAbstract &&
+                    !p.IsGenericType &&
+                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
+                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .ToList();
         }
     }
 }
