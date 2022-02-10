@@ -17,7 +17,6 @@ namespace ManagedReference.Editor
         static readonly GUIContent _nullLabel = new GUIContent("Null");
 
         protected List<Type> types = null;
-        protected Type targetType;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -27,8 +26,16 @@ namespace ManagedReference.Editor
             {
                 if (types == null)
                 {
-                    targetType = property.GetManagedReferenceFieldType();
-                    InitTypes(targetType);
+                    var managedAttribute = attribute as ManagedReferenceAttribute;
+                    if (managedAttribute.customAttribute == null)
+                    {
+                        Type targetType = property.GetManagedReferenceFieldType();
+                        InitTypes(targetType);
+                    }
+                    else
+                    {
+                        InitTypesByAttribute(managedAttribute.customAttribute);
+                    }
                 }
 
                 Rect dropDownRect = position;
@@ -107,7 +114,21 @@ namespace ManagedReference.Editor
 
         private void InitTypes(Type type)
         {
-            this.types = TypeCache.GetTypesDerivedFrom(type)
+            this.types = TypeCache
+                .GetTypesDerivedFrom(type)
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic) &&
+                    !p.IsAbstract &&
+                    !p.IsGenericType &&
+                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
+                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .ToList();
+        }
+
+        private void InitTypesByAttribute(Type typeAttribute)
+        {
+            this.types = TypeCache
+                .GetTypesWithAttribute(typeAttribute)
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic) &&
                     !p.IsAbstract &&
