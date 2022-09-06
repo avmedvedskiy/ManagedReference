@@ -30,7 +30,10 @@ namespace ManagedReference.Editor
                     if (managedAttribute.customAttribute == null)
                     {
                         Type targetType = property.GetManagedReferenceFieldType();
-                        InitTypes(targetType);
+                        if(managedAttribute.genericAttribute)
+                            InitTypes(targetType, property.GenericTargetTypeArgumentDeep());
+                        else
+                            InitTypes(targetType);
                     }
                     else
                     {
@@ -46,7 +49,7 @@ namespace ManagedReference.Editor
                 if (EditorGUI.DropdownButton(dropDownRect, GetTypeName(property), FocusType.Keyboard))
                 {
                     //Debug.Log($"{property.displayName} DropdownButton");
-                    AddDropdown(position, property);
+                    AddDropdown(property);
                 }
 
                 ChangeNameInArraysContent(ref label, property);
@@ -66,7 +69,7 @@ namespace ManagedReference.Editor
                 return;
 
             Type type = property.GetManagedReferenceType();
-            content.text = type.Name.ToString();
+            content.text = type.Name;
         }
 
         private GUIContent GetTypeName(SerializedProperty property)
@@ -78,7 +81,7 @@ namespace ManagedReference.Editor
             }
 
             Type type = property.GetManagedReferenceType();
-            return new GUIContent(type.Name.ToString());
+            return new GUIContent(type.Name);
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -86,7 +89,7 @@ namespace ManagedReference.Editor
             return EditorGUI.GetPropertyHeight(property, true);
         }
 
-        private void AddDropdown(Rect buttonRect, SerializedProperty property)
+        private void AddDropdown(SerializedProperty property)
         {
             GenericMenu nodesMenu = new GenericMenu();
             nodesMenu.AddItem(_nullLabel, false, (x) => { OnSelect((Type)x, property); }, null);
@@ -114,7 +117,7 @@ namespace ManagedReference.Editor
 
         private void InitTypes(Type type)
         {
-            this.types = TypeCache
+            types = TypeCache
                 .GetTypesDerivedFrom(type)
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic) &&
@@ -124,10 +127,23 @@ namespace ManagedReference.Editor
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
                 .ToList();
         }
+        
+        private void InitTypes(Type type, Type genericType)
+        {
+            types = TypeCache
+                .GetTypesDerivedFrom(type)
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic) &&
+                    !p.IsAbstract &&
+                    p.GenericInterfaceTypeArgumentDeep() == genericType &&
+                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
+                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .ToList();
+        }
 
         private void InitTypesByAttribute(Type typeAttribute)
         {
-            this.types = TypeCache
+            types = TypeCache
                 .GetTypesWithAttribute(typeAttribute)
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic) &&

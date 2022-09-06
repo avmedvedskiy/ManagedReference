@@ -12,5 +12,10 @@ namespace ManagedReference
         /// Draw dropdown with all types with this attribute type, use DrawInManagedReferenceAttribute or own custom
         /// </summary>
         public Type customAttribute;
+
+        /// <summary>
+        /// Will be filtered by parent generic type
+        /// </summary>
+        public bool genericAttribute;
     }
 }
