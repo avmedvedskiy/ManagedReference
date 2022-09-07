@@ -16,6 +16,6 @@ The `ManagedReference` attribute allows you to easily set subclasses of those ab
 
 #### Install via git URL
 
-`https://github.com/avmedvedskiy/ManagedReference.git?path=Assets/ManagedReference`
+`https://github.com/avmedvedskiy/ManagedReference.git`
 
 from the `Add package from git URL` option.
