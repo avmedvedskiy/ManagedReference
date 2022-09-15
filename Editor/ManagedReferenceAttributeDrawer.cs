@@ -30,8 +30,9 @@ namespace ManagedReference.Editor
                     if (managedAttribute.customAttribute == null)
                     {
                         Type targetType = property.GetManagedReferenceFieldType();
-                        if(managedAttribute.genericAttribute)
-                            InitTypes(targetType, property.GenericTargetTypeArgumentDeep());
+                        if (managedAttribute.genericAttribute)
+                            InitTypes(targetType,
+                                managedAttribute.genericType ?? property.GenericTargetTypeArgumentDeep());
                         else
                             InitTypes(targetType);
                     }
@@ -127,7 +128,7 @@ namespace ManagedReference.Editor
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
                 .ToList();
         }
-        
+
         private void InitTypes(Type type, Type genericType)
         {
             types = TypeCache

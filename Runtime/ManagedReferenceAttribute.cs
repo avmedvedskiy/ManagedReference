@@ -17,5 +17,10 @@ namespace ManagedReference
         /// Will be filtered by parent generic type
         /// </summary>
         public bool genericAttribute;
+        
+        /// <summary>
+        /// Will be filtered by generic type, need set genericAttribute = true and Type
+        /// </summary>
+        public Type genericType;
     }
 }
