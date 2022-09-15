@@ -31,8 +31,10 @@ namespace ManagedReference.Editor
                     {
                         Type targetType = property.GetManagedReferenceFieldType();
                         if (managedAttribute.genericAttribute)
+                        {
                             InitTypes(targetType,
-                                managedAttribute.genericType ?? property.GenericTargetTypeArgumentDeep());
+                                managedAttribute.genericType ?? property.GenericTargetTypeArgumentDeep(managedAttribute.genericAttributeOrder)); 
+                        }
                         else
                             InitTypes(targetType);
                     }

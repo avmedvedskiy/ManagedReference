@@ -19,6 +19,11 @@ namespace ManagedReference
         public bool genericAttribute;
         
         /// <summary>
+        /// Order of generic attributes 0 - first, 1 second
+        /// </summary>
+        public int genericAttributeOrder = 0;
+        
+        /// <summary>
         /// Will be filtered by generic type, need set genericAttribute = true and Type
         /// </summary>
         public Type genericType;
