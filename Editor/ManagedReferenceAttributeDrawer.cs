@@ -18,6 +18,8 @@ namespace ManagedReference.Editor
 
         protected List<Type> types = null;
 
+        private bool _hasChanged = false;
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
@@ -61,6 +63,12 @@ namespace ManagedReference.Editor
             else
             {
                 EditorGUI.LabelField(position, label, _isNotManagedReferenceLabel);
+            }
+
+            if (_hasChanged)
+            {
+                GUI.changed = true;
+                _hasChanged = false;
             }
 
             EditorGUI.EndProperty();
@@ -116,6 +124,7 @@ namespace ManagedReference.Editor
             property.SetManagedReference((Type)type);
             property.isExpanded = true;
             property.serializedObject.ApplyModifiedProperties();
+            _hasChanged = true;
         }
 
         private void InitTypes(Type type)
