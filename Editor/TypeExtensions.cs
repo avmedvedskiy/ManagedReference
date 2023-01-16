@@ -15,17 +15,20 @@ namespace ManagedReference.Editor
                 : GenericTypeArgumentDeep(type.BaseType);
         }
         
-        public static Type GenericInterfaceTypeArgumentDeep(this Type type, int order = 0)
+        public static bool ContainsGenericInterfaceTypeArgumentDeep(this Type type, Type searchedType, int order = 0)
         {
             //else check interfaces
             foreach (var i in type.GetInterfaces())
             {
-                if (i.GenericTypeArguments.Length > 0)
-                    return i.GenericTypeArguments[order];
+                if (i.GenericTypeArguments.Length > 0 && order < i.GenericTypeArguments.Length)
+                {
+                    if (searchedType == i.GenericTypeArguments[order])
+                        return true;
+                }
             }
 
             //else check base class
-            return type.GenericTypeArgumentDeep();
+            return type.GenericTypeArgumentDeep() == searchedType;
         }
         
         

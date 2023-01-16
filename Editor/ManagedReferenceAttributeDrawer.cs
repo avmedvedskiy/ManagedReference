@@ -147,7 +147,7 @@ namespace ManagedReference.Editor
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic) &&
                     !p.IsAbstract &&
-                    p.GenericInterfaceTypeArgumentDeep() == genericType &&
+                    p.ContainsGenericInterfaceTypeArgumentDeep(genericType)&&
                     !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
                 .ToList();
