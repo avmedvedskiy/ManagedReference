@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace ManagedReference
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    [UsedImplicitly]
     public class ManagedReferenceAttribute : PropertyAttribute
     {
         /// <summary>

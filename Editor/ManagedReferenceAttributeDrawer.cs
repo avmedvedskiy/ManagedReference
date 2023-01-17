@@ -23,6 +23,7 @@ namespace ManagedReference.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
+            EditorGUI.BeginChangeCheck();
 
             if (property.propertyType == SerializedPropertyType.ManagedReference)
             {
@@ -57,21 +58,30 @@ namespace ManagedReference.Editor
                     AddDropdown(property);
                 }
 
-                ChangeNameInArraysContent(ref label, property);
+                //ChangeNameInArraysContent(ref label, property);
                 EditorGUI.PropertyField(position, property, label, true);
             }
             else
             {
                 EditorGUI.LabelField(position, label, _isNotManagedReferenceLabel);
             }
-
+            
+            _hasChanged |= EditorGUI.EndChangeCheck();
             if (_hasChanged)
             {
                 GUI.changed = true;
                 _hasChanged = false;
+                callOnValidateManagedReference(property);
             }
 
             EditorGUI.EndProperty();
+        }
+
+        private void callOnValidateManagedReference(SerializedProperty property)
+        {
+            var methodInfo = property.managedReferenceValue?.GetType().GetMethod("OnValidate",
+                BindingFlags.Default | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            methodInfo?.Invoke(property.managedReferenceValue, Array.Empty<object>());
         }
 
         private void ChangeNameInArraysContent(ref GUIContent content, SerializedProperty property)
