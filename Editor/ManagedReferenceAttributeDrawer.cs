@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -116,11 +117,11 @@ namespace ManagedReference.Editor
             nodesMenu.AddItem(_nullLabel, false, (x) => { OnSelect((Type)x, property); }, null);
             foreach (var type in this.types)
             {
-                ManagedReferenceGroupAttribute group =
-                    (ManagedReferenceGroupAttribute)Attribute.GetCustomAttribute(type,
-                        typeof(ManagedReferenceGroupAttribute));
+                var group =
+                    (CategoryAttribute)Attribute.GetCustomAttribute(type,
+                        typeof(CategoryAttribute));
 
-                string name = group == null ? type.Name : $"{group.name}/{type.Name}";
+                string name = group == null ? type.Name : $"{group.Category}/{type.Name}";
                 nodesMenu.AddItem(new GUIContent(name), false, (x) => { OnSelect((Type)x, property); }, type);
             }
 
