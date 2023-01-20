@@ -20,6 +20,7 @@ namespace ManagedReference.Editor
         protected List<Type> types = null;
 
         private bool _hasChanged = false;
+        private long lastId;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -30,22 +31,7 @@ namespace ManagedReference.Editor
             {
                 if (types == null)
                 {
-                    var managedAttribute = attribute as ManagedReferenceAttribute;
-                    if (managedAttribute.customAttribute == null)
-                    {
-                        Type targetType = property.GetManagedReferenceFieldType();
-                        if (managedAttribute.genericAttribute)
-                        {
-                            InitTypes(targetType,
-                                managedAttribute.genericType ?? property.GenericTargetTypeArgumentDeep(managedAttribute.genericAttributeOrder)); 
-                        }
-                        else
-                            InitTypes(targetType);
-                    }
-                    else
-                    {
-                        InitTypesByAttribute(managedAttribute.customAttribute);
-                    }
+                    CacheTypes(property);
                 }
 
                 Rect dropDownRect = position;
@@ -55,11 +41,8 @@ namespace ManagedReference.Editor
 
                 if (EditorGUI.DropdownButton(dropDownRect, GetTypeName(property), FocusType.Keyboard))
                 {
-                    //Debug.Log($"{property.displayName} DropdownButton");
                     AddDropdown(property);
                 }
-
-                //ChangeNameInArraysContent(ref label, property);
                 EditorGUI.PropertyField(position, property, label, true);
             }
             else
@@ -67,8 +50,8 @@ namespace ManagedReference.Editor
                 EditorGUI.LabelField(position, label, _isNotManagedReferenceLabel);
             }
             
-            _hasChanged |= EditorGUI.EndChangeCheck();
-            if (_hasChanged)
+            //call on validate and Gui changed when change type/changes values etc
+            if (_hasChanged || EditorGUI.EndChangeCheck() || property.managedReferenceId != lastId)
             {
                 GUI.changed = true;
                 _hasChanged = false;
@@ -76,6 +59,28 @@ namespace ManagedReference.Editor
             }
 
             EditorGUI.EndProperty();
+            lastId = property.managedReferenceId;
+        }
+
+        private void CacheTypes(SerializedProperty property)
+        {
+            var managedAttribute = attribute as ManagedReferenceAttribute;
+            if (managedAttribute.customAttribute == null)
+            {
+                Type targetType = property.GetManagedReferenceFieldType();
+                if (managedAttribute.genericAttribute)
+                {
+                    InitTypes(targetType,
+                        managedAttribute.genericType ??
+                        property.GenericTargetTypeArgumentDeep(managedAttribute.genericAttributeOrder));
+                }
+                else
+                    InitTypes(targetType);
+            }
+            else
+            {
+                InitTypesByAttribute(managedAttribute.customAttribute);
+            }
         }
 
         private void callOnValidateManagedReference(SerializedProperty property)
@@ -83,15 +88,6 @@ namespace ManagedReference.Editor
             var methodInfo = property.managedReferenceValue?.GetType().GetMethod("OnValidate",
                 BindingFlags.Default | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             methodInfo?.Invoke(property.managedReferenceValue, Array.Empty<object>());
-        }
-
-        private void ChangeNameInArraysContent(ref GUIContent content, SerializedProperty property)
-        {
-            if (string.IsNullOrEmpty(property.managedReferenceFullTypename))
-                return;
-
-            Type type = property.GetManagedReferenceType();
-            content.text = type.Name;
         }
 
         private GUIContent GetTypeName(SerializedProperty property)
