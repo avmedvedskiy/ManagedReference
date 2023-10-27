@@ -22,13 +22,14 @@ namespace ManagedReference.Editor
             {
                 if (i.GenericTypeArguments.Length > 0 && order < i.GenericTypeArguments.Length)
                 {
-                    if (searchedType == i.GenericTypeArguments[order])
+                    if (i.GenericTypeArguments[order].IsAssignableFrom(searchedType))
                         return true;
                 }
             }
 
             //else check base class
-            return type.GenericTypeArgumentDeep() == searchedType;
+            var baseGenericType = type.GenericTypeArgumentDeep();
+            return baseGenericType != null && baseGenericType.IsAssignableFrom(searchedType);
         }
         
         

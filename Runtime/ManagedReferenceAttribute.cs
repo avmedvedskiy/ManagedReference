@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ManagedReference
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field)]
     [MeansImplicitUse]
     public class ManagedReferenceAttribute : PropertyAttribute
     {
