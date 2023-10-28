@@ -1,8 +1,6 @@
-using System;
 using System.Text.RegularExpressions;
 using ManagedReference.Editor;
 using UnityEditor;
-using UnityEngine;
 
 namespace ManagedReference
 {
@@ -14,7 +12,7 @@ namespace ManagedReference
         {
             if (attribute is DynamicReferenceAttribute dynamicAttribute && !string.IsNullOrEmpty(dynamicAttribute.propertyName))
             {
-                _connectedProperty ??= FindConnectedProperty(property, dynamicAttribute.propertyName);
+                _connectedProperty = FindConnectedProperty(property, dynamicAttribute.propertyName);
                 var type = _connectedProperty?.objectReferenceValue?.GetType();
 
                 if (type != null)
@@ -52,7 +50,8 @@ namespace ManagedReference
 
         private SerializedProperty SearchInArrayProperty(SerializedProperty property, string propertyName)
         {
-            var dataIndex = property.propertyPath.Split('.')[2];
+            var array = property.propertyPath.Split(".");
+            var dataIndex = string.Join(".", array, 0, array.Length - 3);
             var iterator = property.serializedObject.GetIterator();
             while (iterator.NextVisible(true))
             {

@@ -10,15 +10,12 @@ namespace ManagedReference
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.BeginProperty(position, label, property);
             EditorGUI.BeginChangeCheck();
-            EditorGUI.PropertyField(position, property, label, true);
+            EditorGUI.PropertyField(position, property, label, false);
             if (EditorGUI.EndChangeCheck())
             {
                 ShowDropdown(property.objectReferenceValue, property);
             }
-
-            EditorGUI.EndProperty();
         }
 
         private void ShowDropdown(Object target, SerializedProperty property)
