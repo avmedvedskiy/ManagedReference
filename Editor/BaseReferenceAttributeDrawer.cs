@@ -45,7 +45,7 @@ namespace ManagedReference.Editor
 
             //call on validate and Gui changed when change type/changes values etc
             //if (_hasChanged || EditorGUI.EndChangeCheck() || property.managedReferenceId != _lastId)
-            if (_hasChanged || EditorGUI.EndChangeCheck() || property.managedReferenceId != _lastId)
+            if (_hasChanged || EditorGUI.EndChangeCheck())
             {
                 GUI.changed = true;
                 _hasChanged = false;
