@@ -16,7 +16,7 @@ namespace ManagedReference.Editor
         private bool _hasChanged;
         
         private List<Type> _types;
-        private long _lastId;
+        //private long _lastId;
         
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -44,6 +44,7 @@ namespace ManagedReference.Editor
             }
 
             //call on validate and Gui changed when change type/changes values etc
+            //if (_hasChanged || EditorGUI.EndChangeCheck() || property.managedReferenceId != _lastId)
             if (_hasChanged || EditorGUI.EndChangeCheck() || property.managedReferenceId != _lastId)
             {
                 GUI.changed = true;
@@ -52,7 +53,7 @@ namespace ManagedReference.Editor
             }
 
             EditorGUI.EndProperty();
-            _lastId = property.managedReferenceId;
+            //_lastId = property.managedReferenceId;
         }
         
         private void CreateDropdown(SerializedProperty property)
