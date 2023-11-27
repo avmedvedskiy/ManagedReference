@@ -49,7 +49,7 @@ namespace ManagedReference.Editor
             {
                 GUI.changed = true;
                 _hasChanged = false;
-                callOnValidateManagedReference(property);
+                CallOnValidateManagedReference(property);
             }
 
             EditorGUI.EndProperty();
@@ -76,7 +76,7 @@ namespace ManagedReference.Editor
 
         private void OnSelect(Type type, SerializedProperty property)
         {
-            property.SetManagedReference((Type)type);
+            property.SetManagedReferenceWithCopyValues(type);
             property.isExpanded = true;
             property.serializedObject.ApplyModifiedProperties();
             _hasChanged = true;
@@ -84,7 +84,7 @@ namespace ManagedReference.Editor
         
         protected abstract void CacheTypes(SerializedProperty serializedProperty);
 
-        private void callOnValidateManagedReference(SerializedProperty property)
+        private static void CallOnValidateManagedReference(SerializedProperty property)
         {
             var methodInfo = property.managedReferenceValue?.GetType().GetMethod("OnValidate",
                 BindingFlags.Default | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
