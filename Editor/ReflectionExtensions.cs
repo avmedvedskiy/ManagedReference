@@ -10,7 +10,7 @@ namespace ManagedReference
     {
         public static void CopyValuesFrom(this object to, object from)
         {
-            if (from == null)
+            if (from == null || to == null)
                 return;
 
             var fromAllFields = from.GetType().GetAllSerializedFields();
