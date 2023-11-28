@@ -32,11 +32,13 @@ namespace ManagedReference.Editor
                 dropDownRect.x += EditorGUIUtility.labelWidth;
                 dropDownRect.height = EditorGUIUtility.singleLineHeight;
 
+                GUI.color = Color.green;
                 if (EditorGUI.DropdownButton(dropDownRect, GetTypeName(property), FocusType.Keyboard))
                 {
                     CacheTypes(property);
                     CreateDropdown(property);
                 }
+                GUI.color = Color.white;
 
                 EditorGUI.PropertyField(position, property, label, true);
             }
