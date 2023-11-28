@@ -95,7 +95,7 @@ namespace ManagedReference.Editor
         {
             if (string.IsNullOrEmpty(property.managedReferenceFullTypename))
             {
-                GUI.backgroundColor = Color.red;
+                GUI.color = Color.red;
                 return NullLabel;
             }
 
