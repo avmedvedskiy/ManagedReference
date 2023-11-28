@@ -1,11 +1,53 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using ManagedReference.Editor;
 using UnityEditor;
 
 namespace ManagedReference
 {
     public static class ManagedReferenceExtensions
     {
+        public static List<Type> GetTypes(Type type)
+        {
+           return TypeCache
+                .GetTypesDerivedFrom(type)
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic) &&
+                    !p.IsAbstract &&
+                    !p.IsGenericType &&
+                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
+                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .ToList();
+        }
+        
+        public static List<Type> GetTypes(Type type, Type genericType)
+        {
+            return TypeCache
+                .GetTypesDerivedFrom(type)
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic) &&
+                    !p.IsAbstract &&
+                    p.ContainsGenericInterfaceTypeArgumentDeep(genericType) &&
+                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
+                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .ToList();
+        }
+        
+        public static List<Type> GetTypesByAttribute(Type typeAttribute)
+        {
+            return TypeCache
+                .GetTypesWithAttribute(typeAttribute)
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic) &&
+                    !p.IsAbstract &&
+                    !p.IsGenericType &&
+                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
+                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .ToList();
+        }
+        
         public static Type GetManagedReferenceType(this SerializedProperty property)
         {
             if (property.propertyType != SerializedPropertyType.ManagedReference)
@@ -54,5 +96,6 @@ namespace ManagedReference
             return new ArgumentException(
                 "The serialized property type must be SerializedPropertyType.ManagedReference.", paramName);
         }
+        
     }
 }

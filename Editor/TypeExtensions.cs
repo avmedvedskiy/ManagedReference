@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using UnityEditor;
 
 namespace ManagedReference.Editor
@@ -14,7 +15,7 @@ namespace ManagedReference.Editor
                 ? type.GenericTypeArguments[order]
                 : GenericTypeArgumentDeep(type.BaseType);
         }
-        
+
         public static bool ContainsGenericInterfaceTypeArgumentDeep(this Type type, Type searchedType, int order = 0)
         {
             //else check interfaces
@@ -31,8 +32,16 @@ namespace ManagedReference.Editor
             var baseGenericType = type.GenericTypeArgumentDeep();
             return baseGenericType != null && baseGenericType.IsAssignableFrom(searchedType);
         }
-        
-        
+
+        public static string GetNameWithCategory(this Type type)
+        {
+            var group = (CategoryAttribute)Attribute.GetCustomAttribute(type,
+                typeof(CategoryAttribute));
+
+            return group == null ? type.Name : $"{group.Category}/{type.Name}";
+        }
+
+
         public static Type GenericTargetTypeArgumentDeep(this SerializedProperty property, int order = 0)
         {
             return property.serializedObject.targetObject.GetType().GenericTypeArgumentDeep(order);

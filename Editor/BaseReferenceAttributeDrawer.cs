@@ -10,14 +10,16 @@ namespace ManagedReference.Editor
 {
     public abstract class BaseReferenceAttributeDrawer : PropertyDrawer
     {
-        public static readonly GUIContent IsNotManagedReferenceLabel = new("The property type is not manage reference.");
+        public static readonly GUIContent
+            IsNotManagedReferenceLabel = new("The property type is not manage reference.");
+
         public static readonly GUIContent NullLabel = new("Null");
         protected List<Type> Types => _types;
         private bool _hasChanged;
-        
+
         private List<Type> _types;
         //private long _lastId;
-        
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
@@ -55,7 +57,7 @@ namespace ManagedReference.Editor
             EditorGUI.EndProperty();
             //_lastId = property.managedReferenceId;
         }
-        
+
         private void CreateDropdown(SerializedProperty property)
         {
             GenericMenu nodesMenu = new GenericMenu();
@@ -63,12 +65,8 @@ namespace ManagedReference.Editor
             if (Types != null)
                 foreach (var type in Types)
                 {
-                    var group =
-                        (CategoryAttribute)Attribute.GetCustomAttribute(type,
-                            typeof(CategoryAttribute));
-
-                    string name = group == null ? type.Name : $"{group.Category}/{type.Name}";
-                    nodesMenu.AddItem(new GUIContent(name), false, x => { OnSelect((Type)x, property); }, type);
+                    nodesMenu.AddItem(new GUIContent(type.GetNameWithCategory()), false,
+                        x => { OnSelect((Type)x, property); }, type);
                 }
 
             nodesMenu.ShowAsContext();
@@ -81,7 +79,7 @@ namespace ManagedReference.Editor
             property.serializedObject.ApplyModifiedProperties();
             _hasChanged = true;
         }
-        
+
         protected abstract void CacheTypes(SerializedProperty serializedProperty);
 
         private static void CallOnValidateManagedReference(SerializedProperty property)
@@ -103,46 +101,23 @@ namespace ManagedReference.Editor
             return new GUIContent(type.Name);
         }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => EditorGUI.GetPropertyHeight(property, true);
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
+            EditorGUI.GetPropertyHeight(property, true);
 
 
         protected void InitTypes(Type type)
         {
-            _types = TypeCache
-                .GetTypesDerivedFrom(type)
-                .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic) &&
-                    !p.IsAbstract &&
-                    !p.IsGenericType &&
-                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
-                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
-                .ToList();
+            _types = ManagedReferenceExtensions.GetTypes(type);
         }
 
         protected void InitTypes(Type type, Type genericType)
         {
-            _types = TypeCache
-                .GetTypesDerivedFrom(type)
-                .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic) &&
-                    !p.IsAbstract &&
-                    p.ContainsGenericInterfaceTypeArgumentDeep(genericType) &&
-                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
-                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
-                .ToList();
+            _types = ManagedReferenceExtensions.GetTypes(type, genericType);
         }
 
         protected void InitTypesByAttribute(Type typeAttribute)
         {
-            _types = TypeCache
-                .GetTypesWithAttribute(typeAttribute)
-                .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic) &&
-                    !p.IsAbstract &&
-                    !p.IsGenericType &&
-                    !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
-                    Attribute.IsDefined(p, typeof(SerializableAttribute)))
-                .ToList();
+            _types = ManagedReferenceExtensions.GetTypesByAttribute(typeAttribute);
         }
     }
 }
