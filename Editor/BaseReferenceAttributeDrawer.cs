@@ -41,13 +41,8 @@ namespace ManagedReference.Editor
                 }
 
                 GUI.color = Color.white;
-
                 
-                var customDrawer = PropertyDrawerHandlers.GetPropertyDrawer(property);
-                if(customDrawer != null)
-                    customDrawer.OnGUI(position, property, label);
-                else
-                    EditorGUI.PropertyField(position, property, label, true);
+                PropertyDrawerHandlers.PropertyField(position, property, label, true);
             }
             else
             {
@@ -111,7 +106,7 @@ namespace ManagedReference.Editor
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
-            EditorGUI.GetPropertyHeight(property, true);
+            PropertyDrawerHandlers.GetPropertyHeight(property, label);
 
 
         protected void InitTypes(Type type)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace ManagedReference.Editor
 {
@@ -16,7 +17,32 @@ namespace ManagedReference.Editor
             _allDrawers = GetAllCustomPropertyDrawers();
         }
 
-        public static PropertyDrawer GetPropertyDrawer(SerializedProperty property)
+        public static void PropertyField(Rect position, SerializedProperty property, GUIContent label,
+            bool includeChildren = false)
+        {
+            var drawer = GetPropertyDrawer(property);
+            if (drawer != null)
+            {
+                drawer.OnGUI(position, property, label);
+            }
+            else
+            {
+                EditorGUI.PropertyField(position, property, label, includeChildren);
+            }
+        }
+
+        public static float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            var drawer = GetPropertyDrawer(property);
+            if (drawer != null)
+            {
+                return drawer.GetPropertyHeight(property,label);
+                
+            }
+            return EditorGUI.GetPropertyHeight(property, true);
+        }
+
+        private static PropertyDrawer GetPropertyDrawer(SerializedProperty property)
         {
             if (property.managedReferenceValue == null)
                 return null;
@@ -40,7 +66,7 @@ namespace ManagedReference.Editor
                 return propertyDrawer;
             }
 
-            propertyDrawer =  (PropertyDrawer)Activator.CreateInstance(drawer.drawer);
+            propertyDrawer = (PropertyDrawer)Activator.CreateInstance(drawer.drawer);
             _cachedDrawers[property.contentHash] = propertyDrawer;
             return propertyDrawer;
         }
