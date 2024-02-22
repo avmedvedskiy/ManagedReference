@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -10,10 +9,12 @@ namespace ManagedReference.Editor
 {
     public abstract class BaseReferenceAttributeDrawer : PropertyDrawer
     {
-        public static readonly GUIContent
+        private static readonly GUIContent
             IsNotManagedReferenceLabel = new("The property type is not manage reference.");
 
-        public static readonly GUIContent NullLabel = new("Null");
+        private static readonly GUIContent NullLabel = new("Null");
+        private static List<Type> _customPropertyDrawersCache; 
+        
         protected List<Type> Types => _types;
         private bool _hasChanged;
 
@@ -38,9 +39,15 @@ namespace ManagedReference.Editor
                     CacheTypes(property);
                     CreateDropdown(property);
                 }
+
                 GUI.color = Color.white;
 
-                EditorGUI.PropertyField(position, property, label, true);
+                
+                var customDrawer = PropertyDrawerHandlers.GetPropertyDrawer(property);
+                if(customDrawer != null)
+                    customDrawer.OnGUI(position, property, label);
+                else
+                    EditorGUI.PropertyField(position, property, label, true);
             }
             else
             {
