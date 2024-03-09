@@ -36,9 +36,9 @@ namespace ManagedReference.Editor
             var drawer = GetPropertyDrawer(property);
             if (drawer != null)
             {
-                //почему то не надо тут считать высоту и оно автоматом работать будет
-                return EditorGUIUtility.singleLineHeight;
-                //return drawer.GetPropertyHeight(property,label);
+                
+                //return EditorGUIUtility.singleLineHeight;
+                return drawer.GetPropertyHeight(property,label);
                 
             }
             return EditorGUI.GetPropertyHeight(property,label,true);
