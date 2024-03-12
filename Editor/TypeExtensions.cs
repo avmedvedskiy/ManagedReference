@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using UnityEditor;
+using UnityEngine;
 
 namespace ManagedReference.Editor
 {
@@ -45,6 +46,39 @@ namespace ManagedReference.Editor
         public static Type GenericTargetTypeArgumentDeep(this SerializedProperty property, int order = 0)
         {
             return property.serializedObject.targetObject.GetType().GenericTypeArgumentDeep(order);
+        }
+        
+        public static Type GetValueType(this SerializedProperty property)
+        {
+            switch (property.propertyType)
+            {
+                case SerializedPropertyType.Integer:
+                    return typeof(int);
+                case SerializedPropertyType.Boolean:
+                    return typeof(bool);
+                case SerializedPropertyType.Float:
+                    return property.numericType == SerializedPropertyNumericType.Double
+                        ? typeof(double)
+                        : typeof(float);
+                case SerializedPropertyType.String:
+                    return typeof(string);
+                case SerializedPropertyType.Color:
+                    return typeof(Color);
+                case SerializedPropertyType.ObjectReference:
+                    return property.objectReferenceValue?.GetType();
+                case SerializedPropertyType.Vector2:
+                    return typeof(Vector2);
+                case SerializedPropertyType.Vector3:
+                    return typeof(Vector3);
+                case SerializedPropertyType.Vector4:
+                    return typeof(Vector4);
+                case SerializedPropertyType.Rect:
+                    return typeof(Rect);
+                case SerializedPropertyType.Quaternion:
+                    return typeof(Quaternion);
+                default:
+                    return null;
+            }
         }
     }
 }

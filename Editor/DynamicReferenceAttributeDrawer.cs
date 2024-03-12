@@ -13,7 +13,7 @@ namespace ManagedReference
             if (attribute is DynamicReferenceAttribute dynamicAttribute && !string.IsNullOrEmpty(dynamicAttribute.propertyName))
             {
                 _connectedProperty = FindConnectedProperty(property, dynamicAttribute.propertyName);
-                var type = _connectedProperty?.objectReferenceValue?.GetType();
+                var type = _connectedProperty?.GetValueType();
 
                 if (type != null)
                 {
