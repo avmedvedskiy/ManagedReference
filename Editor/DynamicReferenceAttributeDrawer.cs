@@ -36,10 +36,11 @@ namespace ManagedReference
         private bool PropertyInSubArray(SerializedProperty property) => Regex.Matches(property.propertyPath, "Array").Count > 1;
         private SerializedProperty SearchInSingleProperty(SerializedProperty property, string propertyName)
         {
+            var searchPath = property.propertyPath.Replace(property.name, propertyName);
             var iterator = property.serializedObject.GetIterator();
             while (iterator.NextVisible(true))
             {
-                if (iterator.name == propertyName && iterator.depth == property.depth)
+                if (iterator.propertyPath == searchPath && iterator.depth == property.depth)
                 {
                     return iterator;
                 }
@@ -47,6 +48,7 @@ namespace ManagedReference
             iterator.Dispose();
             return null;
         }
+        
 
         private SerializedProperty SearchInArrayProperty(SerializedProperty property, string propertyName)
         {
