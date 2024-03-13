@@ -39,7 +39,7 @@ namespace ManagedReference
             var iterator = property.serializedObject.GetIterator();
             while (iterator.NextVisible(true))
             {
-                if (iterator.name == propertyName && iterator.depth == property.depth - 1)
+                if (iterator.name == propertyName && iterator.depth == property.depth)
                 {
                     return iterator;
                 }
