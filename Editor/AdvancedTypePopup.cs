@@ -5,6 +5,7 @@ using ManagedReference.Editor;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ManagedReference.Editor
 {
@@ -40,6 +41,7 @@ namespace ManagedReference.Editor
             // Add null item.
             List<AdvancedDropdownItem> items = new();
             root.AddChild(new AdvancedTypePopupItem(null, NullLabel));
+            root.AddSeparator();
 
             foreach (var type in types.OrderByDescending(x=> x.GetCategory()))
             {
