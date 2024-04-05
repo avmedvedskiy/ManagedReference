@@ -36,10 +36,16 @@ namespace ManagedReference.Editor
 
         public static string GetNameWithCategory(this Type type)
         {
+            var category = type.GetCategory();
+
+            return string.IsNullOrEmpty(category) ? type.Name : $"{category}/{type.Name}";
+        }
+
+        public static string GetCategory(this Type type)
+        {
             var group = (CategoryAttribute)Attribute.GetCustomAttribute(type,
                 typeof(CategoryAttribute));
-
-            return group == null ? type.Name : $"{group.Category}/{type.Name}";
+            return group?.Category;
         }
 
 

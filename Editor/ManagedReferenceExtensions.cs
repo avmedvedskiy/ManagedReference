@@ -19,6 +19,7 @@ namespace ManagedReference
                     !p.IsGenericType &&
                     !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .OrderBy(x=> x.Name)
                 .ToList();
         }
         
@@ -32,6 +33,7 @@ namespace ManagedReference
                     p.ContainsGenericInterfaceTypeArgumentDeep(genericType) &&
                     !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .OrderBy(x=> x.Name)
                 .ToList();
         }
         
@@ -45,6 +47,7 @@ namespace ManagedReference
                     !p.IsGenericType &&
                     !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
+                .OrderBy(x=> x.Name)
                 .ToList();
         }
         

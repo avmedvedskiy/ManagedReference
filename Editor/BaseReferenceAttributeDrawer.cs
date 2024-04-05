@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace ManagedReference.Editor
 {
+    
     public abstract class BaseReferenceAttributeDrawer : PropertyDrawer
     {
         private static readonly GUIContent
@@ -37,7 +38,8 @@ namespace ManagedReference.Editor
                 if (EditorGUI.DropdownButton(dropDownRect, GetTypeName(property), FocusType.Keyboard))
                 {
                     CacheTypes(property);
-                    CreateDropdown(property);
+                    //CreateDropdown(property);
+                    CreateAdvancedDropdown(property,dropDownRect);
                 }
 
                 GUI.color = Color.white;
@@ -74,6 +76,12 @@ namespace ManagedReference.Editor
                 }
 
             nodesMenu.ShowAsContext();
+        }
+        
+        private void CreateAdvancedDropdown(SerializedProperty property, Rect position)
+        {
+            var popup = new AdvancedTypePopup(Types,x => { OnSelect(x, property); },new AdvancedDropdownState());
+            popup.Show(position);
         }
 
         private void OnSelect(Type type, SerializedProperty property)
