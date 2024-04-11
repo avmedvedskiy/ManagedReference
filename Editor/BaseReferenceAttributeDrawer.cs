@@ -38,8 +38,8 @@ namespace ManagedReference.Editor
                 if (EditorGUI.DropdownButton(dropDownRect, GetTypeName(property), FocusType.Keyboard))
                 {
                     CacheTypes(property);
-                    //CreateDropdown(property);
-                    CreateAdvancedDropdown(property,dropDownRect);
+                    CreateDropdown(property);
+                    //CreateAdvancedDropdown(property,dropDownRect);
                 }
 
                 GUI.color = Color.white;
