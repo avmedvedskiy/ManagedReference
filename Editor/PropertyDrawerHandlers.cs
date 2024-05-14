@@ -9,12 +9,12 @@ namespace ManagedReference.Editor
 {
     public static class PropertyDrawerHandlers
     {
-        private static readonly List<(Type drawer, Type targetType)> _allDrawers;
         private static readonly Dictionary<uint, PropertyDrawer> _cachedDrawers = new();
+        private static readonly List<(Type drawer, string targetType)> _allDrawers;
 
         static PropertyDrawerHandlers()
         {
-            _allDrawers = GetAllCustomPropertyDrawers();
+            _allDrawers = GetAllDrawers();
         }
 
         public static void PropertyField(Rect position, SerializedProperty property, GUIContent label,
@@ -36,12 +36,11 @@ namespace ManagedReference.Editor
             var drawer = GetPropertyDrawer(property);
             if (drawer != null)
             {
-                
                 //return EditorGUIUtility.singleLineHeight;
-                return drawer.GetPropertyHeight(property,label);
-                
+                return drawer.GetPropertyHeight(property, label);
             }
-            return EditorGUI.GetPropertyHeight(property,label,true);
+
+            return EditorGUI.GetPropertyHeight(property, label, true);
         }
 
         private static PropertyDrawer GetPropertyDrawer(SerializedProperty property)
@@ -49,41 +48,33 @@ namespace ManagedReference.Editor
             if (property.managedReferenceValue == null)
                 return null;
 
-            foreach (var drawer in _allDrawers)
-            {
-                if (drawer.targetType == property.GetManagedReferenceType())
-                {
-                    return GetCachedPropertyDrawer(property, drawer);
-                }
-            }
-
-            return null;
-        }
-
-        private static PropertyDrawer GetCachedPropertyDrawer(SerializedProperty property,
-            (Type drawer, Type targetType) drawer)
-        {
-            if (_cachedDrawers.TryGetValue(property.contentHash, out var propertyDrawer) && propertyDrawer != null)
+            if (_cachedDrawers.TryGetValue(property.contentHash, out var propertyDrawer))
             {
                 return propertyDrawer;
             }
 
-            propertyDrawer = (PropertyDrawer)Activator.CreateInstance(drawer.drawer);
+            var managedReferenceFullTypename = property.managedReferenceFullTypename;
+            var drawer = _allDrawers.Find(x => x.targetType == managedReferenceFullTypename);
+            propertyDrawer = drawer.drawer != null ? (PropertyDrawer)Activator.CreateInstance(drawer.drawer) : null;
             _cachedDrawers[property.contentHash] = propertyDrawer;
             return propertyDrawer;
         }
 
-        private static List<(Type, Type )> GetAllCustomPropertyDrawers() =>
+
+        private static List<(Type x, string)> GetAllDrawers() =>
             TypeCache
                 .GetTypesWithAttribute<CustomPropertyDrawer>()
                 .Where(x => !x.IsAbstract)
-                .Select(x => (x, GetTargetType(x.GetCustomAttributes<CustomPropertyDrawer>().First())))
+                .Select(x => (x, GetTargetTypeName(x.GetCustomAttributes<CustomPropertyDrawer>().First())))
                 .ToList();
 
-        private static Type GetTargetType(CustomPropertyDrawer attribute) =>
-            (Type)attribute
+        private static string GetTargetTypeName(CustomPropertyDrawer attribute)
+        {
+            var type = (Type)attribute
                 .GetType()
                 .GetField("m_Type", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(attribute);
+                ?.GetValue(attribute);
+            return $"{type.Assembly.GetName().Name} {type.FullName}";
+        }
     }
 }
