@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,26 +8,25 @@ namespace ManagedReference.Editor
 {
     public static class TypeExtensions
     {
-        public static Type GenericTypeArgumentDeep(this Type type, int order = 0)
+        private static Type GenericTypeArgumentDeep(this Type type)
         {
             if (type == null)
                 return null;
 
             return type.GenericTypeArguments.Length > 0
-                ? type.GenericTypeArguments[order]
+                ? type.GenericTypeArguments[0]
                 : GenericTypeArgumentDeep(type.BaseType);
         }
 
-        public static bool ContainsGenericInterfaceTypeArgumentDeep(this Type type, Type searchedType, int order = 0)
+        private static bool IsAssignableFrom(this Type type, params Type[] parentTypes) => parentTypes.Any(type.IsAssignableFrom);
+
+        public static bool ContainsGenericInterfaceTypeArgumentDeep(this Type type, params Type[] searchedType)
         {
             //else check interfaces
             foreach (var i in type.GetInterfaces())
             {
-                if (i.GenericTypeArguments.Length > 0 && order < i.GenericTypeArguments.Length)
-                {
-                    if (i.GenericTypeArguments[order].IsAssignableFrom(searchedType))
-                        return true;
-                }
+                if (i.GenericTypeArguments.Any(x=> x.IsAssignableFrom(searchedType)))
+                    return true;
             }
 
             //else check base class
@@ -49,9 +49,9 @@ namespace ManagedReference.Editor
         }
 
 
-        public static Type GenericTargetTypeArgumentDeep(this SerializedProperty property, int order = 0)
+        public static Type GenericTargetTypeArgumentDeep(this SerializedProperty property)
         {
-            return property.serializedObject.targetObject.GetType().GenericTypeArgumentDeep(order);
+            return property.serializedObject.targetObject.GetType().GenericTypeArgumentDeep();
         }
         
         public static Type GetValueType(this SerializedProperty property)

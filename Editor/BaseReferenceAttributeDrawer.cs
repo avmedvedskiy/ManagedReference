@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -7,19 +8,17 @@ using UnityEngine;
 
 namespace ManagedReference.Editor
 {
-    
     public abstract class BaseReferenceAttributeDrawer : PropertyDrawer
     {
         private static readonly GUIContent
             IsNotManagedReferenceLabel = new("The property type is not manage reference.");
 
         private static readonly GUIContent NullLabel = new("Null");
-        private static List<Type> _customPropertyDrawersCache; 
-        
-        protected List<Type> Types => _types;
+        private static List<Type> _customPropertyDrawersCache;
+
+        protected Dictionary<Type, List<Type>> Types { get; private set; }
         private bool _hasChanged;
 
-        private List<Type> _types;
         //private long _lastId;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -43,7 +42,7 @@ namespace ManagedReference.Editor
                 }
 
                 GUI.color = Color.white;
-                
+
                 PropertyDrawerHandlers.PropertyField(position, property, label, true);
             }
             else
@@ -69,20 +68,26 @@ namespace ManagedReference.Editor
             GenericMenu nodesMenu = new GenericMenu();
             nodesMenu.AddItem(NullLabel, false, x => { OnSelect((Type)x, property); }, null);
             if (Types != null)
-                foreach (var type in Types)
+                foreach (var value in Types)
                 {
-                    nodesMenu.AddItem(new GUIContent(type.GetNameWithCategory()), false,
-                        x => { OnSelect((Type)x, property); }, type);
+                    nodesMenu.AddItem(new GUIContent(string.Empty), false, x => { }, null);
+                    foreach (var type in value.Value)
+                    {
+                        nodesMenu.AddItem(new GUIContent(type.GetNameWithCategory()), false,
+                            x => { OnSelect((Type)x, property); }, type);
+                    }
                 }
 
             nodesMenu.ShowAsContext();
         }
-        
+
+        /*
         private void CreateAdvancedDropdown(SerializedProperty property, Rect position)
         {
-            var popup = new AdvancedTypePopup(Types,x => { OnSelect(x, property); },new AdvancedDropdownState());
+            var popup = new AdvancedTypePopup(Types, x => { OnSelect(x, property); }, new AdvancedDropdownState());
             popup.Show(position);
         }
+        */
 
         private void OnSelect(Type type, SerializedProperty property)
         {
@@ -117,19 +122,24 @@ namespace ManagedReference.Editor
             PropertyDrawerHandlers.GetPropertyHeight(property, label);
 
 
-        protected void InitTypes(Type type)
+        protected void InitTypes(Type parentType)
         {
-            _types = ManagedReferenceExtensions.GetTypes(type);
+            Types = new() { { parentType, ManagedReferenceExtensions.GetTypes(parentType) } };
         }
 
-        protected void InitTypes(Type type, Type genericType)
+        protected void InitTypes(Type parentType, params Type[] genericType)
         {
-            _types = ManagedReferenceExtensions.GetTypes(type, genericType);
+            Types = genericType.ToDictionary(k => k, v => ManagedReferenceExtensions.GetTypes(parentType, v));
+            //Types = new Dictionary<Type, List<Type>>();
+            //foreach (var gType in genericType)
+            //{
+            //    Types.Add(gType, ManagedReferenceExtensions.GetTypes(parentType, gType));
+            //}
         }
 
         protected void InitTypesByAttribute(Type typeAttribute)
         {
-            _types = ManagedReferenceExtensions.GetTypesByAttribute(typeAttribute);
+            Types = new() { { typeAttribute, ManagedReferenceExtensions.GetTypesByAttribute(typeAttribute) } };
         }
     }
 }

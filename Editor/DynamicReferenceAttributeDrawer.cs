@@ -10,15 +10,15 @@ namespace ManagedReference
         private SerializedProperty _connectedProperty;
         protected override void CacheTypes(SerializedProperty property)
         {
-            if (attribute is DynamicReferenceAttribute dynamicAttribute && !string.IsNullOrEmpty(dynamicAttribute.propertyName))
+            if (attribute is DynamicReferenceAttribute dynamicAttribute && !string.IsNullOrEmpty(dynamicAttribute.PropertyName))
             {
-                _connectedProperty = FindConnectedProperty(property, dynamicAttribute.propertyName);
+                _connectedProperty = FindConnectedProperty(property, dynamicAttribute.PropertyName);
                 var type = _connectedProperty?.GetValueType();
 
                 if (type != null)
                 {
                     var targetType = property.GetManagedReferenceFieldType();
-                    InitTypes(targetType, type);
+                    InitTypes(targetType, type, dynamicAttribute.ExtraType);
                 }
             }
         }

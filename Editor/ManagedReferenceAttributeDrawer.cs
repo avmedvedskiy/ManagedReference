@@ -21,7 +21,7 @@ namespace ManagedReference.Editor
                 {
                     InitTypes(targetType,
                         managedAttribute.genericType ??
-                        property.GenericTargetTypeArgumentDeep(managedAttribute.genericAttributeOrder));
+                        property.GenericTargetTypeArgumentDeep());
                 }
                 else
                     InitTypes(targetType);

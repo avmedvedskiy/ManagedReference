@@ -9,10 +9,10 @@ namespace ManagedReference
 {
     public static class ManagedReferenceExtensions
     {
-        public static List<Type> GetTypes(Type type)
+        public static List<Type> GetTypes(Type parentType)
         {
            return TypeCache
-                .GetTypesDerivedFrom(type)
+                .GetTypesDerivedFrom(parentType)
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic) &&
                     !p.IsAbstract &&
@@ -23,10 +23,10 @@ namespace ManagedReference
                 .ToList();
         }
         
-        public static List<Type> GetTypes(Type type, Type genericType)
+        public static List<Type> GetTypes(Type parentType, params Type[] genericType)
         {
             return TypeCache
-                .GetTypesDerivedFrom(type)
+                .GetTypesDerivedFrom(parentType)
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic) &&
                     !p.IsAbstract &&
