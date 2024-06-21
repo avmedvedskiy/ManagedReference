@@ -129,7 +129,9 @@ namespace ManagedReference.Editor
 
         protected void InitTypes(Type parentType, params Type[] genericType)
         {
-            Types = genericType.ToDictionary(k => k, v => ManagedReferenceExtensions.GetTypes(parentType, v));
+            Types = genericType
+                .Where(x => x != null)
+                .ToDictionary(k => k, v => ManagedReferenceExtensions.GetTypes(parentType, v));
             //Types = new Dictionary<Type, List<Type>>();
             //foreach (var gType in genericType)
             //{
