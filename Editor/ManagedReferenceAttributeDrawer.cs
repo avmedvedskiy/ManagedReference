@@ -19,9 +19,14 @@ namespace ManagedReference.Editor
                 Type targetType = property.GetManagedReferenceFieldType();
                 if (managedAttribute.genericAttribute)
                 {
+                    Type type = null;
+                    if (fieldInfo?.DeclaringType?.IsGenericType ?? false)
+                    {
+                        type = fieldInfo.DeclaringType.GenericTypeArguments[0];
+                    }
                     InitTypes(targetType,
                         managedAttribute.genericType ??
-                        property.GenericTargetTypeArgumentDeep());
+                        type ?? property.GenericTargetTypeArgumentDeep());
                 }
                 else
                     InitTypes(targetType);
