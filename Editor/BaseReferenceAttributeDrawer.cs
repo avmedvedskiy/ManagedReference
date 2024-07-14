@@ -131,6 +131,7 @@ namespace ManagedReference.Editor
         {
             Types = genericType
                 .Where(x => x != null)
+                .Distinct()
                 .ToDictionary(k => k, v => ManagedReferenceExtensions.GetTypes(parentType, v));
             //Types = new Dictionary<Type, List<Type>>();
             //foreach (var gType in genericType)
