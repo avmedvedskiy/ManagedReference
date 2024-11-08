@@ -1,6 +1,6 @@
 {
   "name": "com.avmedvedskiy.managedreference",
-  "displayName": "Infrastructure.ManagedReference",
+  "displayName": "Editor.ManagedReference",
   "version": "1.2.8",
   "unity": "2019.4",
   "author": "avmedvedskiy",
