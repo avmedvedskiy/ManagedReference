@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using ManagedReference.Editor;
 using UnityEditor;
+using UnityEngine;
 
 namespace ManagedReference
 {
@@ -11,7 +12,7 @@ namespace ManagedReference
     {
         public static List<Type> GetTypes(Type parentType)
         {
-           return TypeCache
+            return TypeCache
                 .GetTypesDerivedFrom(parentType)
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic) &&
@@ -19,10 +20,10 @@ namespace ManagedReference
                     !p.IsGenericType &&
                     !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
-                .OrderBy(x=> x.Name)
+                .OrderBy(x => x.Name)
                 .ToList();
         }
-        
+
         public static List<Type> GetTypes(Type parentType, params Type[] genericType)
         {
             return TypeCache
@@ -33,10 +34,10 @@ namespace ManagedReference
                     p.ContainsGenericInterfaceTypeArgumentDeep(genericType) &&
                     !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
-                .OrderBy(x=> x.Name)
+                .OrderBy(x => x.Name)
                 .ToList();
         }
-        
+
         public static List<Type> GetTypesByAttribute(Type typeAttribute)
         {
             return TypeCache
@@ -47,10 +48,10 @@ namespace ManagedReference
                     !p.IsGenericType &&
                     !typeof(UnityEngine.Object).IsAssignableFrom(p) &&
                     Attribute.IsDefined(p, typeof(SerializableAttribute)))
-                .OrderBy(x=> x.Name)
+                .OrderBy(x => x.Name)
                 .ToList();
         }
-        
+
         public static Type GetManagedReferenceType(this SerializedProperty property)
         {
             if (property.propertyType != SerializedPropertyType.ManagedReference)
@@ -58,7 +59,9 @@ namespace ManagedReference
                 throw SerializedPropertyTypeMustBeManagedReference(nameof(property));
             }
 
-            return GetType(property.managedReferenceFullTypename);
+            return string.IsNullOrEmpty(property.managedReferenceFullTypename)
+                ? null
+                : GetType(property.managedReferenceFullTypename);
         }
 
         public static Type GetManagedReferenceFieldType(this SerializedProperty property)
@@ -99,6 +102,5 @@ namespace ManagedReference
             return new ArgumentException(
                 "The serialized property type must be SerializedPropertyType.ManagedReference.", paramName);
         }
-        
     }
 }

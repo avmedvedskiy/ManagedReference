@@ -36,6 +36,5 @@ namespace ManagedReference.Editor
                 InitTypesByAttribute(managedAttribute.customAttribute);
             }
         }
-
     }
 }

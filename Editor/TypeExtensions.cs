@@ -18,15 +18,19 @@ namespace ManagedReference.Editor
                 : GenericTypeArgumentDeep(type.BaseType);
         }
 
-        private static bool IsAssignableFrom(this Type type, params Type[] parentTypes) => parentTypes.Any(type.IsAssignableFrom);
+        private static bool IsAssignableFrom(this Type type, params Type[] parentTypes) =>
+            parentTypes.Any(type.IsAssignableFrom);
 
         public static bool ContainsGenericInterfaceTypeArgumentDeep(this Type type, params Type[] searchedType)
         {
             //else check interfaces
-            foreach (var i in type.GetInterfaces())
+            if (type.BaseType == null)
             {
-                if (i.GenericTypeArguments.Any(x=> x.IsAssignableFrom(searchedType)))
-                    return true;
+                foreach (var i in type.GetInterfaces())
+                {
+                    if (i.GenericTypeArguments.Any(x => x.IsAssignableFrom(searchedType)))
+                        return true;
+                }
             }
 
             //else check base class
@@ -53,7 +57,7 @@ namespace ManagedReference.Editor
         {
             return property.serializedObject.targetObject.GetType().GenericTypeArgumentDeep();
         }
-        
+
         public static Type GetValueType(this SerializedProperty property)
         {
             switch (property.propertyType)

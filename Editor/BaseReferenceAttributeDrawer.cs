@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace ManagedReference.Editor
@@ -88,6 +87,8 @@ namespace ManagedReference.Editor
             popup.Show(position);
         }
         */
+        
+        
 
         private void OnSelect(Type type, SerializedProperty property)
         {
@@ -115,7 +116,7 @@ namespace ManagedReference.Editor
             }
 
             Type type = property.GetManagedReferenceType();
-            return new GUIContent(type.Name);
+            return new GUIContent(type.Name, property.tooltip);
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>

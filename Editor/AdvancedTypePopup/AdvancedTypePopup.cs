@@ -26,40 +26,44 @@ namespace ManagedReference.Editor
     {
         private static readonly string NullLabel = "Null";
 
-        private readonly List<Type> _types;
+        private readonly Dictionary<Type, List<Type>> _types;
         private readonly Action<Type> _onSelect;
 
-        public AdvancedTypePopup(List<Type> types,Action<Type> onSelect, AdvancedDropdownState state) : base(state)
+        public AdvancedTypePopup(Dictionary<Type, List<Type>> types,Action<Type> onSelect, AdvancedDropdownState state) : base(state)
         {
             _types = types;
             _onSelect = onSelect;
             minimumSize = new Vector2(minimumSize.x, EditorGUIUtility.singleLineHeight * 2f);
         }
 
-        private static void AddTo(AdvancedDropdownItem root, List<Type> types)
+        private static void AddTo(AdvancedDropdownItem root, Dictionary<Type, List<Type>> types)
         {
             // Add null item.
             List<AdvancedDropdownItem> items = new();
             root.AddChild(new AdvancedTypePopupItem(null, NullLabel));
             root.AddSeparator();
 
-            foreach (var type in types.OrderByDescending(x=> x.GetCategory()))
+            foreach (var mainType in types)
             {
-                string category = type.GetCategory();
-                if (string.IsNullOrEmpty(category))
+                foreach (var type in mainType.Value.OrderByDescending(x=> x.GetCategory()))
                 {
-                    items.Add(new AdvancedTypePopupItem(type, type.Name));
+                    string category = type.GetCategory();
+                    if (string.IsNullOrEmpty(category))
+                    {
+                        items.Add(new AdvancedTypePopupItem(type, type.Name));
+                    }
+                    else
+                    {
+                        var categoryGroup = GetOrCreateCategoryGroup(items, category);
+                        categoryGroup.AddChild(new AdvancedTypePopupItem(type, type.Name));
+                    }
                 }
-                else
-                {
-                    var categoryGroup = GetOrCreateCategoryGroup(items, category);
-                    categoryGroup.AddChild(new AdvancedTypePopupItem(type, type.Name));
-                }
-            }
 
-            foreach (var item in items.OrderBy(x => x.name))
-            {
-                root.AddChild(item);
+                foreach (var item in items.OrderBy(x => x.name))
+                {
+                    root.AddChild(item);
+                }
+                root.AddSeparator();
             }
         }
 
