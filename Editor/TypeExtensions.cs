@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -50,6 +51,13 @@ namespace ManagedReference.Editor
             var group = (CategoryAttribute)Attribute.GetCustomAttribute(type,
                 typeof(CategoryAttribute));
             return group?.Category;
+        }
+
+        public static string GetDescription(this SerializedProperty property)
+        {
+            var type = property.managedReferenceValue?.GetType();
+            var descriptionAttribute = type?.GetCustomAttribute<DescriptionAttribute>();
+            return descriptionAttribute?.Description;
         }
 
 

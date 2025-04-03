@@ -116,7 +116,7 @@ namespace ManagedReference.Editor
             }
 
             Type type = property.GetManagedReferenceType();
-            return new GUIContent(type.Name, property.tooltip);
+            return new GUIContent(type.Name, property.GetDescription() ?? property.tooltip);
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
