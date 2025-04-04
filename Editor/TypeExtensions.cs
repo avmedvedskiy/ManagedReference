@@ -25,7 +25,7 @@ namespace ManagedReference.Editor
         public static bool ContainsGenericInterfaceTypeArgumentDeep(this Type type, params Type[] searchedType)
         {
             //else check interfaces
-            if (type.BaseType == null)
+            if (type.BaseType == null || type.BaseType == typeof(object))
             {
                 foreach (var i in type.GetInterfaces())
                 {
