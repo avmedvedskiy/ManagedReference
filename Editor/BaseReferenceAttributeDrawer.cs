@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -109,13 +110,13 @@ namespace ManagedReference.Editor
 
         private GUIContent GetTypeName(SerializedProperty property)
         {
-            if (string.IsNullOrEmpty(property.managedReferenceFullTypename))
+            Type type = property.GetManagedReferenceType();
+            if (type == null)
             {
                 GUI.color = Color.red;
-                return NullLabel;
+                return NullLabel; 
             }
 
-            Type type = property.GetManagedReferenceType();
             return new GUIContent(type.Name, property.GetDescription() ?? property.tooltip);
         }
 

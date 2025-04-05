@@ -10,6 +10,8 @@ namespace ManagedReference
 {
     public static class ManagedReferenceExtensions
     {
+        private static Dictionary<string,Type> _typeCache = new Dictionary<string, Type>();
+        
         public static List<Type> GetTypes(Type parentType)
         {
             return TypeCache
@@ -59,9 +61,10 @@ namespace ManagedReference
                 throw SerializedPropertyTypeMustBeManagedReference(nameof(property));
             }
 
-            return string.IsNullOrEmpty(property.managedReferenceFullTypename)
+            var fullName = property.managedReferenceFullTypename;
+            return string.IsNullOrEmpty(fullName)
                 ? null
-                : GetType(property.managedReferenceFullTypename);
+                : GetType(fullName);
         }
 
         public static Type GetManagedReferenceFieldType(this SerializedProperty property)
@@ -92,9 +95,14 @@ namespace ManagedReference
 
         static Type GetType(string typeName)
         {
+            if (_typeCache.TryGetValue(typeName, out var type))
+                return type;
+            
             int splitIndex = typeName.IndexOf(' ');
             var assembly = Assembly.Load(typeName.Substring(0, splitIndex));
-            return assembly.GetType(typeName.Substring(splitIndex + 1));
+            type = assembly.GetType(typeName.Substring(splitIndex + 1));
+            _typeCache[typeName] = type;
+            return type;
         }
 
         static ArgumentException SerializedPropertyTypeMustBeManagedReference(string paramName)

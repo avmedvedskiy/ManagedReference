@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +10,15 @@ namespace ManagedReference.Editor
 {
     public static class TypeExtensions
     {
+        private static Dictionary<Type, DescriptionAttribute> _descriptionAttributesCache;
+
+        static TypeExtensions()
+        {
+            _descriptionAttributesCache = TypeCache
+                .GetTypesWithAttribute(typeof(DescriptionAttribute))
+                .ToDictionary(type => type, type => type.GetCustomAttribute<DescriptionAttribute>());
+        }
+
         private static Type GenericTypeArgumentDeep(this Type type)
         {
             if (type == null)
@@ -56,8 +66,9 @@ namespace ManagedReference.Editor
         public static string GetDescription(this SerializedProperty property)
         {
             var type = property.managedReferenceValue?.GetType();
-            var descriptionAttribute = type?.GetCustomAttribute<DescriptionAttribute>();
-            return descriptionAttribute?.Description;
+            if(type != null && _descriptionAttributesCache.TryGetValue(type, out var result))
+                return result?.Description;
+            return null;
         }
 
 
